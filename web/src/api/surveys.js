@@ -12,3 +12,7 @@ export const createQuestion = (surveyId, data) =>
   client.post(`/surveys/${surveyId}/questions`, data).then((r) => r.data.question);
 export const updateQuestion = (id, data) => client.put(`/questions/${id}`, data).then((r) => r.data.question);
 export const deleteQuestion = (id) => client.delete(`/questions/${id}`);
+
+export const getResponseStatus = (surveyId) => client.get(`/surveys/${surveyId}/responses/me`).then((r) => r.data);
+export const submitResponse = (surveyId, answers) =>
+  client.post(`/surveys/${surveyId}/responses`, { answers }).then((r) => r.data);

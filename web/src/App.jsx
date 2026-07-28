@@ -7,7 +7,9 @@ import UsersPage from './pages/admin/UsersPage';
 import SurveysPage from './pages/admin/SurveysPage';
 import SurveyDetailPage from './pages/admin/SurveyDetailPage';
 import SurveyReportPage from './pages/admin/SurveyReportPage';
-import SiswaDashboard from './pages/SiswaDashboard';
+import SiswaLayout from './pages/siswa/SiswaLayout';
+import SurveyListPage from './pages/siswa/SurveyListPage';
+import SurveyFillPage from './pages/siswa/SurveyFillPage';
 import GuruDashboard from './pages/GuruDashboard';
 
 function HomeRedirect() {
@@ -34,7 +36,10 @@ function AppRoutes() {
       </Route>
 
       <Route element={<ProtectedRoute roles={['siswa']} />}>
-        <Route path="/siswa" element={<SiswaDashboard />} />
+        <Route path="/siswa" element={<SiswaLayout />}>
+          <Route index element={<SurveyListPage />} />
+          <Route path="surveys/:id" element={<SurveyFillPage />} />
+        </Route>
       </Route>
 
       <Route element={<ProtectedRoute roles={['guru']} />}>

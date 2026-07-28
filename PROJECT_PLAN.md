@@ -27,7 +27,7 @@ Dokumen ini merangkum tahapan project dari inisiasi sampai project berjalan di p
 - [x] Setup project React (routing, state management, auth guard per role) → Vite + React Router, `AuthContext`, `ProtectedRoute` per role
 - [x] Halaman login → terhubung ke `POST /api/auth/login`, redirect ke dashboard sesuai role, terverifikasi jalan di browser
 - [x] Dashboard Admin: kelola user, kelola survey, lihat laporan → `/admin/users` (CRUD+import CSV), `/admin/surveys` + `/admin/surveys/:id` (CRUD survey & question, publish/close), `/admin/surveys/:id/report` (laporan), terverifikasi jalan di browser
-- [ ] Halaman isi survey untuk Siswa (backend siap: `GET /surveys` & `GET /surveys/:id` kini scoped untuk role siswa, 68 test lulus; frontend menyusul)
+- [x] Halaman isi survey untuk Siswa → `/siswa` (daftar survey dengan status terisi/belum) + `/siswa/surveys/:id` (form isi per tipe jawaban), terverifikasi jalan di browser
 - [ ] Dashboard hasil evaluasi untuk Guru
 - [ ] Integrasi ke API backend
 
