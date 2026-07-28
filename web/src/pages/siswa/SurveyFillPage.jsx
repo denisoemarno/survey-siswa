@@ -148,12 +148,16 @@ export default function SurveyFillPage() {
           {survey.deskripsi && <CardDescription>{survey.deskripsi}</CardDescription>}
         </CardHeader>
         <CardContent>
+          <p className="mb-4 text-xs text-muted-foreground">
+            Pertanyaan bertanda <span className="font-bold text-destructive">*</span> wajib diisi.
+          </p>
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
             {questions.map((q, i) => (
               <div key={q.id} className="flex flex-col gap-2">
-                <Label className="font-semibold">
-                  {i + 1}. {q.teks_pertanyaan} {q.wajib && <span className="text-destructive">*</span>}
-                </Label>
+                <p className="font-semibold">
+                  {i + 1}. {q.teks_pertanyaan}
+                  {q.wajib && <span className="ml-1 font-bold text-destructive">*</span>}
+                </p>
                 <QuestionField question={q} value={answers[q.id]} onChange={(v) => setAnswer(q.id, v)} />
               </div>
             ))}

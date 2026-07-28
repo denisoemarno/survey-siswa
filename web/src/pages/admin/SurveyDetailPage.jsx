@@ -104,6 +104,7 @@ export default function SurveyDetailPage() {
   }
 
   async function handlePublish() {
+    if (!window.confirm('Publish survey ini? Setelah dipublish, survey tidak bisa diedit lagi dan siswa target bisa langsung mulai mengisi.')) return;
     setActionError(null);
     try {
       await publishSurvey(id);
@@ -114,6 +115,7 @@ export default function SurveyDetailPage() {
   }
 
   async function handleClose() {
+    if (!window.confirm('Tutup survey ini? Setelah ditutup, siswa tidak bisa mengisi lagi dan status ini tidak bisa dikembalikan ke published.')) return;
     setActionError(null);
     try {
       await closeSurvey(id);
