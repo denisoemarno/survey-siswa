@@ -69,6 +69,6 @@ Dokumen ini merangkum tahapan project dari inisiasi sampai project berjalan di p
 
 ---
 
-**Status saat ini:** Fase 0-6 selesai. Repo sudah di GitHub (`denisoemarno/survey-siswa`) dengan CI dan build+push image (multi-platform amd64/arm64) ke GHCR tervalidasi sukses jalan otomatis. Pipeline build→push→deploy terbukti bekerja lewat simulasi lokal (`docker-compose.prod.yml` menarik image asli dari GHCR dan jalan berdampingan dengan dev stack). Belum ada VPS/cloud sungguhan — `deploy.yml` sudah siap sebagai template manual (`workflow_dispatch`) begitu ada target nyata.
+**Status saat ini:** Fase 0-8 selesai (lihat rekap detail di setiap fase di atas). Setelah itu, atas permintaan user, frontend di-redesign total pakai Tailwind CSS + shadcn/ui (commit `0f216fa`, lalu beberapa perbaikan UX: konfirmasi publish/close, indikator wajib, label "Guru Pengampu" — commit `3467e98`, `fcfd8bd`). Database dev sekarang juga sudah diisi 9 contoh survey published mencakup ketiga tipe (kepuasan, evaluasi_guru, evaluasi_kegiatan) untuk demo — ini data runtime, bukan kode, jadi tidak ada di git.
 
 **Langkah berikutnya yang disarankan:** Fase 9 — Go-Live & Evaluasi. Karena belum ada pengguna nyata (siswa/guru/admin sekolah sungguhan), fase ini menunggu keputusan kapan project mau benar-benar dipakai.
