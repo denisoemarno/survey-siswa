@@ -9,8 +9,8 @@ Dokumen ini merangkum tahapan project dari inisiasi sampai project berjalan di p
 - [x] Setup struktur folder project (mono-repo: `/api`, `/web`, `/infra`)
 
 ## Fase 1 — Desain
-- [ ] Desain skema database (ERD) berdasarkan entities di PRD §9
-- [ ] Desain API contract (endpoint list: auth, users, surveys, questions, responses, reports)
+- [x] Desain skema database (ERD) berdasarkan entities di PRD §9 → [docs/DATABASE_SCHEMA.md](./docs/DATABASE_SCHEMA.md)
+- [x] Desain API contract (endpoint list: auth, users, surveys, questions, responses, reports) → [docs/API_CONTRACT.md](./docs/API_CONTRACT.md)
 - [ ] Wireframe halaman utama: login, dashboard admin, form isi survey (siswa), dashboard hasil (guru)
 
 ## Fase 2 — Development Backend (API)
@@ -67,6 +67,6 @@ Dokumen ini merangkum tahapan project dari inisiasi sampai project berjalan di p
 
 ---
 
-**Status saat ini:** Fase 0 selesai — PRD, rekap, repo Git lokal, dan struktur folder (`api/`, `web/`, `infra/`) sudah dibuat.
+**Status saat ini:** Fase 0 selesai. Fase 1 sebagian selesai — skema database & API contract sudah didesain, wireframe halaman belum.
 
-**Langkah berikutnya yang disarankan:** buat remote GitHub & push, lalu lanjut ke desain skema database (Fase 1).
+**Langkah berikutnya yang disarankan:** wireframe halaman utama (opsional, bisa dilewati jika langsung mulai coding), lalu lanjut ke Fase 2 (setup project Express, koneksi PostgreSQL, dan implementasi auth).
