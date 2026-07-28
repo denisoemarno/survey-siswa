@@ -1,6 +1,15 @@
 import { useEffect, useState } from 'react';
 import { listUsers, createUser, updateUser, deleteUser, importUsersCsv } from '../../api/users';
 import { errorMessage } from '../../api/errors';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { RoleBadge } from '@/components/RoleBadge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 
 const ROLES = ['siswa', 'guru', 'admin'];
 
@@ -123,145 +132,192 @@ export default function UsersPage() {
   }
 
   return (
-    <div>
-      <h1>Kelola User</h1>
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">Kelola User</h1>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setCsvOpen((v) => !v)}>
+            {csvOpen ? 'Tutup Import CSV' : 'Import CSV'}
+          </Button>
+          <Button onClick={openCreateForm}>+ Tambah User</Button>
+        </div>
+      </div>
 
-      <section style={{ display: 'flex', gap: 8, marginBottom: 16, alignItems: 'end' }}>
-        <div>
-          <label style={{ display: 'block', fontSize: 12 }}>Role</label>
-          <select value={filters.role} onChange={(e) => setFilters({ ...filters, role: e.target.value })}>
-            <option value="">Semua</option>
-            {ROLES.map((r) => (
-              <option key={r} value={r}>{r}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label style={{ display: 'block', fontSize: 12 }}>Kelas</label>
-          <input value={filters.kelas} onChange={(e) => setFilters({ ...filters, kelas: e.target.value })} />
-        </div>
-        <div>
-          <label style={{ display: 'block', fontSize: 12 }}>Angkatan</label>
-          <input value={filters.angkatan} onChange={(e) => setFilters({ ...filters, angkatan: e.target.value })} />
-        </div>
-        <button onClick={load}>Filter</button>
-        <div style={{ flex: 1 }} />
-        <button onClick={openCreateForm}>+ Tambah User</button>
-        <button onClick={() => setCsvOpen((v) => !v)}>{csvOpen ? 'Tutup Import CSV' : 'Import CSV'}</button>
-      </section>
+      <Card>
+        <CardContent className="flex flex-wrap items-end gap-3 pt-6">
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-xs text-muted-foreground">Role</Label>
+            <Select value={filters.role || 'all'} onValueChange={(v) => setFilters({ ...filters, role: v === 'all' ? '' : v })}>
+              <SelectTrigger className="w-36">
+                <SelectValue placeholder="Semua" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Semua</SelectItem>
+                {ROLES.map((r) => (
+                  <SelectItem key={r} value={r}>{r}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-xs text-muted-foreground">Kelas</Label>
+            <Input className="w-36" value={filters.kelas} onChange={(e) => setFilters({ ...filters, kelas: e.target.value })} />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-xs text-muted-foreground">Angkatan</Label>
+            <Input className="w-28" value={filters.angkatan} onChange={(e) => setFilters({ ...filters, angkatan: e.target.value })} />
+          </div>
+          <Button variant="secondary" onClick={load}>Filter</Button>
+        </CardContent>
+      </Card>
 
       {csvOpen && (
-        <form onSubmit={handleImport} style={{ border: '1px solid #ddd', padding: 12, marginBottom: 16 }}>
-          <p style={{ marginTop: 0 }}>
-            Format kolom: <code>nama,email,password,role,kelas,angkatan,mapel_diampu</code>
-          </p>
-          <textarea
-            rows={6}
-            style={{ width: '100%' }}
-            value={csvText}
-            onChange={(e) => setCsvText(e.target.value)}
-            placeholder={'nama,email,password,role,kelas,angkatan\nBudi,budi@sekolah.test,rahasia123,siswa,10 IPA 1,2026'}
-          />
-          {csvError && <p style={{ color: 'red' }}>{csvError}</p>}
-          {csvResult && (
-            <p>
-              Berhasil: {csvResult.created.length}, Gagal: {csvResult.failed.length}
-              {csvResult.failed.length > 0 && (
-                <ul>
-                  {csvResult.failed.map((f) => (
-                    <li key={f.row}>Baris {f.row} ({f.email}): {f.message}</li>
-                  ))}
-                </ul>
+        <Card>
+          <CardHeader>
+            <CardTitle>Import User via CSV</CardTitle>
+            <CardDescription>
+              Format kolom: <code>nama,email,password,role,kelas,angkatan,mapel_diampu</code>
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleImport} className="flex flex-col gap-3">
+              <Textarea
+                rows={6}
+                value={csvText}
+                onChange={(e) => setCsvText(e.target.value)}
+                placeholder={'nama,email,password,role,kelas,angkatan\nBudi,budi@sekolah.test,rahasia123,siswa,10 IPA 1,2026'}
+              />
+              {csvError && (
+                <Alert variant="destructive">
+                  <AlertDescription>{csvError}</AlertDescription>
+                </Alert>
               )}
-            </p>
-          )}
-          <button type="submit" disabled={csvSaving || !csvText}>
-            {csvSaving ? 'Mengimpor...' : 'Import'}
-          </button>
-        </form>
+              {csvResult && (
+                <Alert>
+                  <AlertDescription>
+                    Berhasil: {csvResult.created.length}, Gagal: {csvResult.failed.length}
+                    {csvResult.failed.length > 0 && (
+                      <ul className="mt-2 list-disc pl-5">
+                        {csvResult.failed.map((f) => (
+                          <li key={f.row}>Baris {f.row} ({f.email}): {f.message}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </AlertDescription>
+                </Alert>
+              )}
+              <Button type="submit" disabled={csvSaving || !csvText} className="self-start">
+                {csvSaving ? 'Mengimpor...' : 'Import'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       )}
 
       {formOpen && (
-        <form onSubmit={handleSubmit} style={{ border: '1px solid #ddd', padding: 12, marginBottom: 16 }}>
-          <h3 style={{ marginTop: 0 }}>{editingId ? 'Edit User' : 'Tambah User'}</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            <label>
-              Nama
-              <input value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} required style={{ display: 'block', width: '100%' }} />
-            </label>
-            <label>
-              Email
-              <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required style={{ display: 'block', width: '100%' }} />
-            </label>
-            <label>
-              Password {editingId && '(kosongkan jika tidak diubah)'}
-              <input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required={!editingId} style={{ display: 'block', width: '100%' }} />
-            </label>
-            <label>
-              Role
-              <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} style={{ display: 'block', width: '100%' }}>
-                {ROLES.map((r) => (
-                  <option key={r} value={r}>{r}</option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Kelas
-              <input value={form.kelas} onChange={(e) => setForm({ ...form, kelas: e.target.value })} style={{ display: 'block', width: '100%' }} />
-            </label>
-            <label>
-              Angkatan
-              <input value={form.angkatan} onChange={(e) => setForm({ ...form, angkatan: e.target.value })} style={{ display: 'block', width: '100%' }} />
-            </label>
-            <label>
-              Mapel Diampu (guru)
-              <input value={form.mapel_diampu} onChange={(e) => setForm({ ...form, mapel_diampu: e.target.value })} style={{ display: 'block', width: '100%' }} />
-            </label>
-          </div>
-          {formError && <p style={{ color: 'red' }}>{formError}</p>}
-          <div style={{ marginTop: 12 }}>
-            <button type="submit" disabled={saving}>{saving ? 'Menyimpan...' : 'Simpan'}</button>
-            <button type="button" onClick={() => setFormOpen(false)} style={{ marginLeft: 8 }}>Batal</button>
-          </div>
-        </form>
+        <Card>
+          <CardHeader>
+            <CardTitle>{editingId ? 'Edit User' : 'Tambah User'}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <Label>Nama</Label>
+                  <Input value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} required />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label>Email</Label>
+                  <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label>Password {editingId && <span className="font-normal text-muted-foreground">(kosongkan jika tidak diubah)</span>}</Label>
+                  <Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required={!editingId} />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label>Role</Label>
+                  <Select value={form.role} onValueChange={(v) => setForm({ ...form, role: v })}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ROLES.map((r) => (
+                        <SelectItem key={r} value={r}>{r}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label>Kelas</Label>
+                  <Input value={form.kelas} onChange={(e) => setForm({ ...form, kelas: e.target.value })} />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label>Angkatan</Label>
+                  <Input value={form.angkatan} onChange={(e) => setForm({ ...form, angkatan: e.target.value })} />
+                </div>
+                <div className="col-span-2 flex flex-col gap-1.5">
+                  <Label>Mapel Diampu (guru)</Label>
+                  <Input value={form.mapel_diampu} onChange={(e) => setForm({ ...form, mapel_diampu: e.target.value })} />
+                </div>
+              </div>
+              {formError && (
+                <Alert variant="destructive">
+                  <AlertDescription>{formError}</AlertDescription>
+                </Alert>
+              )}
+              <div className="flex gap-2">
+                <Button type="submit" disabled={saving}>{saving ? 'Menyimpan...' : 'Simpan'}</Button>
+                <Button type="button" variant="outline" onClick={() => setFormOpen(false)}>Batal</Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       )}
 
-      {loading && <p>Memuat...</p>}
-      {listError && <p style={{ color: 'red' }}>{listError}</p>}
+      {loading && <p className="text-muted-foreground">Memuat...</p>}
+      {listError && (
+        <Alert variant="destructive">
+          <AlertDescription>{listError}</AlertDescription>
+        </Alert>
+      )}
 
       {!loading && !listError && (
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ textAlign: 'left', borderBottom: '2px solid #333' }}>
-              <th>Nama</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Kelas</th>
-              <th>Angkatan</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((u) => (
-              <tr key={u.id} style={{ borderBottom: '1px solid #eee' }}>
-                <td>{u.nama}</td>
-                <td>{u.email}</td>
-                <td>{u.role}</td>
-                <td>{u.kelas || '-'}</td>
-                <td>{u.angkatan || '-'}</td>
-                <td>
-                  <button onClick={() => openEditForm(u)}>Edit</button>
-                  <button onClick={() => handleDelete(u)} style={{ marginLeft: 6 }}>Hapus</button>
-                </td>
-              </tr>
-            ))}
-            {users.length === 0 && (
-              <tr>
-                <td colSpan={6}>Belum ada user.</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+        <Card>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nama</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead>Kelas</TableHead>
+                <TableHead>Angkatan</TableHead>
+                <TableHead className="text-right">Aksi</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {users.map((u) => (
+                <TableRow key={u.id}>
+                  <TableCell className="font-medium">{u.nama}</TableCell>
+                  <TableCell>{u.email}</TableCell>
+                  <TableCell>
+                    <RoleBadge role={u.role} />
+                  </TableCell>
+                  <TableCell>{u.kelas || '-'}</TableCell>
+                  <TableCell>{u.angkatan || '-'}</TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="ghost" size="sm" onClick={() => openEditForm(u)}>Edit</Button>
+                    <Button variant="ghost" size="sm" className="text-destructive" onClick={() => handleDelete(u)}>Hapus</Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {users.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center text-muted-foreground">Belum ada user.</TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </Card>
       )}
     </div>
   );

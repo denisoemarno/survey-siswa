@@ -2,53 +2,42 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getSurvey, getResponseStatus, submitResponse } from '../../api/surveys';
 import { errorMessage } from '../../api/errors';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 function QuestionField({ question, value, onChange }) {
   if (question.tipe_jawaban === 'pilihan_ganda') {
     return (
-      <div>
+      <RadioGroup value={value || ''} onValueChange={onChange}>
         {(question.opsi || []).map((opsi) => (
-          <label key={opsi} style={{ display: 'block', marginBottom: 4 }}>
-            <input
-              type="radio"
-              name={question.id}
-              value={opsi}
-              checked={value === opsi}
-              onChange={(e) => onChange(e.target.value)}
-            />{' '}
-            {opsi}
-          </label>
+          <div key={opsi} className="flex items-center gap-2">
+            <RadioGroupItem value={opsi} id={`${question.id}-${opsi}`} />
+            <Label htmlFor={`${question.id}-${opsi}`} className="font-normal">{opsi}</Label>
+          </div>
         ))}
-      </div>
+      </RadioGroup>
     );
   }
 
   if (question.tipe_jawaban === 'skala') {
     return (
-      <div style={{ display: 'flex', gap: 12 }}>
+      <RadioGroup value={value ? String(value) : ''} onValueChange={onChange} className="flex flex-row gap-4">
         {[1, 2, 3, 4, 5].map((n) => (
-          <label key={n} style={{ textAlign: 'center' }}>
-            <input
-              type="radio"
-              name={question.id}
-              value={n}
-              checked={Number(value) === n}
-              onChange={(e) => onChange(e.target.value)}
-            />
-            <div style={{ fontSize: 12 }}>{n}</div>
-          </label>
+          <div key={n} className="flex flex-col items-center gap-1">
+            <RadioGroupItem value={String(n)} id={`${question.id}-${n}`} />
+            <Label htmlFor={`${question.id}-${n}`} className="text-xs font-normal">{n}</Label>
+          </div>
         ))}
-      </div>
+      </RadioGroup>
     );
   }
 
   return (
-    <textarea
-      value={value || ''}
-      onChange={(e) => onChange(e.target.value)}
-      style={{ width: '100%' }}
-      rows={3}
-    />
+    <Textarea value={value || ''} onChange={(e) => onChange(e.target.value)} rows={3} />
   );
 }
 
@@ -112,48 +101,74 @@ export default function SurveyFillPage() {
     }
   }
 
-  if (loading) return <p>Memuat...</p>;
-  if (loadError) return <p style={{ color: 'red' }}>{loadError}</p>;
+  if (loading) return <p className="text-muted-foreground">Memuat...</p>;
+  if (loadError) return (
+    <Alert variant="destructive">
+      <AlertDescription>{loadError}</AlertDescription>
+    </Alert>
+  );
 
   if (submitted) {
     return (
-      <div>
-        <h1>Terima kasih!</h1>
-        <p>Jawaban anda untuk survey &quot;{survey.judul}&quot; berhasil dikirim.</p>
-        <Link to="/siswa">&larr; Kembali ke daftar survey</Link>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Terima kasih!</CardTitle>
+          <CardDescription>Jawaban anda untuk survey &quot;{survey.judul}&quot; berhasil dikirim.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Link to="/siswa" className="text-sm text-primary hover:underline">&larr; Kembali ke daftar survey</Link>
+        </CardContent>
+      </Card>
     );
   }
 
   if (alreadySubmitted) {
     return (
-      <div>
-        <h1>{survey.judul}</h1>
-        <p>Anda sudah mengisi survey ini sebelumnya.</p>
-        <Link to="/siswa">&larr; Kembali ke daftar survey</Link>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>{survey.judul}</CardTitle>
+          <CardDescription>Anda sudah mengisi survey ini sebelumnya.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Link to="/siswa" className="text-sm text-primary hover:underline">&larr; Kembali ke daftar survey</Link>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div>
-      <p><Link to="/siswa">&larr; Kembali ke daftar survey</Link></p>
-      <h1>{survey.judul}</h1>
-      {survey.deskripsi && <p>{survey.deskripsi}</p>}
+    <div className="flex flex-col gap-4">
+      <Link to="/siswa" className="text-sm text-muted-foreground hover:text-foreground">
+        &larr; Kembali ke daftar survey
+      </Link>
 
-      <form onSubmit={handleSubmit}>
-        {questions.map((q, i) => (
-          <div key={q.id} style={{ marginBottom: 20 }}>
-            <label style={{ display: 'block', fontWeight: 'bold', marginBottom: 6 }}>
-              {i + 1}. {q.teks_pertanyaan} {q.wajib && <span style={{ color: 'red' }}>*</span>}
-            </label>
-            <QuestionField question={q} value={answers[q.id]} onChange={(v) => setAnswer(q.id, v)} />
-          </div>
-        ))}
+      <Card>
+        <CardHeader>
+          <CardTitle>{survey.judul}</CardTitle>
+          {survey.deskripsi && <CardDescription>{survey.deskripsi}</CardDescription>}
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+            {questions.map((q, i) => (
+              <div key={q.id} className="flex flex-col gap-2">
+                <Label className="font-semibold">
+                  {i + 1}. {q.teks_pertanyaan} {q.wajib && <span className="text-destructive">*</span>}
+                </Label>
+                <QuestionField question={q} value={answers[q.id]} onChange={(v) => setAnswer(q.id, v)} />
+              </div>
+            ))}
 
-        {submitError && <p style={{ color: 'red' }}>{submitError}</p>}
-        <button type="submit" disabled={submitting}>{submitting ? 'Mengirim...' : 'Kirim Jawaban'}</button>
-      </form>
+            {submitError && (
+              <Alert variant="destructive">
+                <AlertDescription>{submitError}</AlertDescription>
+              </Alert>
+            )}
+            <Button type="submit" disabled={submitting} className="self-start">
+              {submitting ? 'Mengirim...' : 'Kirim Jawaban'}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

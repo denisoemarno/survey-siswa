@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { getReport } from '../../api/reports';
 import { errorMessage } from '../../api/errors';
 import ReportView from '../../components/ReportView';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function SurveyReportPage() {
   const { id } = useParams();
@@ -19,12 +20,18 @@ export default function SurveyReportPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  if (loading) return <p>Memuat...</p>;
-  if (error) return <p style={{ color: 'red' }}>{error}</p>;
+  if (loading) return <p className="text-muted-foreground">Memuat...</p>;
+  if (error) return (
+    <Alert variant="destructive">
+      <AlertDescription>{error}</AlertDescription>
+    </Alert>
+  );
 
   return (
-    <div>
-      <p><Link to={`/admin/surveys/${id}`}>&larr; Kembali ke survey</Link></p>
+    <div className="flex flex-col gap-4">
+      <Link to={`/admin/surveys/${id}`} className="text-sm text-muted-foreground hover:text-foreground">
+        &larr; Kembali ke survey
+      </Link>
       <ReportView report={report} />
     </div>
   );

@@ -1,27 +1,14 @@
 import { Outlet } from 'react-router-dom';
+import AppHeader from '@/components/AppHeader';
 import { useAuth } from '../../context/AuthContext';
 
 export default function SiswaLayout() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   return (
-    <div style={{ fontFamily: 'sans-serif' }}>
-      <header
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '12px 24px',
-          borderBottom: '1px solid #ddd',
-        }}
-      >
-        <strong>Survey Siswa</strong>
-        <div>
-          <span>{user.nama} ({user.kelas || user.role})</span>
-          <button onClick={logout} style={{ marginLeft: 12 }}>Logout</button>
-        </div>
-      </header>
-      <main style={{ padding: 24, maxWidth: 720, margin: '0 auto' }}>
+    <div className="min-h-screen bg-muted/30">
+      <AppHeader title="Survey Siswa" userDetail={user.kelas || user.role} />
+      <main className="mx-auto max-w-2xl p-6">
         <Outlet />
       </main>
     </div>

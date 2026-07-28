@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { listSurveys } from '../../api/surveys';
 import { errorMessage } from '../../api/errors';
-
-const statusColor = { draft: '#999', published: '#2a7', closed: '#a33' };
+import { buttonVariants } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { StatusBadge } from '@/components/StatusBadge';
 
 export default function EvaluationsListPage() {
   const [surveys, setSurveys] = useState([]);
@@ -17,37 +19,32 @@ export default function EvaluationsListPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p>Memuat...</p>;
-  if (error) return <p style={{ color: 'red' }}>{error}</p>;
+  if (loading) return <p className="text-muted-foreground">Memuat...</p>;
+  if (error) return (
+    <Alert variant="destructive">
+      <AlertDescription>{error}</AlertDescription>
+    </Alert>
+  );
 
   return (
-    <div>
-      <h1>Evaluasi Untuk Anda</h1>
-      {surveys.length === 0 && <p>Belum ada survey evaluasi yang dibuat untuk anda.</p>}
-      <ul style={{ listStyle: 'none', padding: 0 }}>
+    <div className="flex flex-col gap-4">
+      <h1 className="text-2xl font-semibold">Evaluasi Untuk Anda</h1>
+      {surveys.length === 0 && <p className="text-muted-foreground">Belum ada survey evaluasi yang dibuat untuk anda.</p>}
+      <div className="flex flex-col gap-3">
         {surveys.map((s) => (
-          <li
-            key={s.id}
-            style={{
-              border: '1px solid #ddd',
-              borderRadius: 6,
-              padding: 16,
-              marginBottom: 12,
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            <div>
-              <div style={{ fontWeight: 'bold' }}>{s.judul}</div>
-              <div style={{ fontSize: 13 }}>
-                Status: <span style={{ color: statusColor[s.status], fontWeight: 'bold' }}>{s.status}</span>
+          <Card key={s.id}>
+            <CardContent className="flex items-center justify-between pt-6">
+              <div>
+                <div className="font-medium">{s.judul}</div>
+                <div className="mt-1"><StatusBadge status={s.status} /></div>
               </div>
-            </div>
-            <Link to={`/guru/evaluations/${s.id}`}>Lihat Laporan</Link>
-          </li>
+              <Link to={`/guru/evaluations/${s.id}`} className={buttonVariants({ size: 'sm' })}>
+                Lihat Laporan
+              </Link>
+            </CardContent>
+          </Card>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }

@@ -1,27 +1,11 @@
 import { Outlet } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import AppHeader from '@/components/AppHeader';
 
 export default function GuruLayout() {
-  const { user, logout } = useAuth();
-
   return (
-    <div style={{ fontFamily: 'sans-serif' }}>
-      <header
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '12px 24px',
-          borderBottom: '1px solid #ddd',
-        }}
-      >
-        <strong>Survey Siswa — Guru</strong>
-        <div>
-          <span>{user.nama} ({user.role})</span>
-          <button onClick={logout} style={{ marginLeft: 12 }}>Logout</button>
-        </div>
-      </header>
-      <main style={{ padding: 24, maxWidth: 720, margin: '0 auto' }}>
+    <div className="min-h-screen bg-muted/30">
+      <AppHeader title="Survey Siswa — Guru" />
+      <main className="mx-auto max-w-2xl p-6">
         <Outlet />
       </main>
     </div>

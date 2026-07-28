@@ -11,6 +11,16 @@ import {
   deleteQuestion,
 } from '../../api/surveys';
 import { errorMessage } from '../../api/errors';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { StatusBadge } from '@/components/StatusBadge';
 
 const QUESTION_TYPES = ['pilihan_ganda', 'skala', 'essay'];
 
@@ -180,140 +190,196 @@ export default function SurveyDetailPage() {
     }
   }
 
-  if (loading) return <p>Memuat...</p>;
-  if (loadError) return <p style={{ color: 'red' }}>{loadError}</p>;
+  if (loading) return <p className="text-muted-foreground">Memuat...</p>;
+  if (loadError) return (
+    <Alert variant="destructive">
+      <AlertDescription>{loadError}</AlertDescription>
+    </Alert>
+  );
 
   const isDraft = survey.status === 'draft';
 
   return (
-    <div>
-      <p><Link to="/admin/surveys">&larr; Kembali ke daftar survey</Link></p>
-      <h1>{survey.judul}</h1>
-      <p>
-        Tipe: <strong>{survey.tipe}</strong> &nbsp;|&nbsp; Status: <strong>{survey.status}</strong>
-      </p>
-      <p>
-        Periode: {new Date(survey.periode_mulai).toLocaleString()} - {new Date(survey.periode_selesai).toLocaleString()}
-      </p>
+    <div className="flex flex-col gap-6">
+      <div>
+        <Link to="/admin/surveys" className="text-sm text-muted-foreground hover:text-foreground">
+          &larr; Kembali ke daftar survey
+        </Link>
+        <div className="mt-2 flex items-center gap-3">
+          <h1 className="text-2xl font-semibold">{survey.judul}</h1>
+          <StatusBadge status={survey.status} />
+        </div>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Tipe: {survey.tipe} &middot; Periode: {new Date(survey.periode_mulai).toLocaleString()} - {new Date(survey.periode_selesai).toLocaleString()}
+        </p>
+      </div>
 
-      {actionError && <p style={{ color: 'red' }}>{actionError}</p>}
+      {actionError && (
+        <Alert variant="destructive">
+          <AlertDescription>{actionError}</AlertDescription>
+        </Alert>
+      )}
 
-      <section style={{ marginBottom: 16 }}>
-        {isDraft && !editForm && <button onClick={startEdit}>Edit Survey</button>}
-        {isDraft && <button onClick={handlePublish} style={{ marginLeft: 8 }}>Publish</button>}
-        {survey.status === 'published' && <button onClick={handleClose}>Tutup Survey</button>}
-        {isDraft && <button onClick={handleDeleteSurvey} style={{ marginLeft: 8 }}>Hapus Survey</button>}
-        <Link to={`/admin/surveys/${id}/report`} style={{ marginLeft: 8 }}>Lihat Laporan</Link>
-      </section>
+      <div className="flex flex-wrap gap-2">
+        {isDraft && !editForm && <Button variant="outline" onClick={startEdit}>Edit Survey</Button>}
+        {isDraft && <Button onClick={handlePublish}>Publish</Button>}
+        {survey.status === 'published' && <Button onClick={handleClose}>Tutup Survey</Button>}
+        {isDraft && <Button variant="destructive" onClick={handleDeleteSurvey}>Hapus Survey</Button>}
+        <Link to={`/admin/surveys/${id}/report`} className={buttonVariants({ variant: 'secondary' })}>
+          Lihat Laporan
+        </Link>
+      </div>
 
       {editForm && (
-        <form onSubmit={handleEditSubmit} style={{ border: '1px solid #ddd', padding: 12, marginBottom: 16 }}>
-          <h3 style={{ marginTop: 0 }}>Edit Survey</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            <label>
-              Judul
-              <input value={editForm.judul} onChange={(e) => setEditForm({ ...editForm, judul: e.target.value })} required style={{ display: 'block', width: '100%' }} />
-            </label>
-            <label>
-              Target Kelas
-              <input value={editForm.target_kelas} onChange={(e) => setEditForm({ ...editForm, target_kelas: e.target.value })} style={{ display: 'block', width: '100%' }} />
-            </label>
-            <label>
-              Target Angkatan
-              <input value={editForm.target_angkatan} onChange={(e) => setEditForm({ ...editForm, target_angkatan: e.target.value })} style={{ display: 'block', width: '100%' }} />
-            </label>
-            <label>
-              Periode Mulai
-              <input type="datetime-local" value={editForm.periode_mulai} onChange={(e) => setEditForm({ ...editForm, periode_mulai: e.target.value })} required style={{ display: 'block', width: '100%' }} />
-            </label>
-            <label>
-              Periode Selesai
-              <input type="datetime-local" value={editForm.periode_selesai} onChange={(e) => setEditForm({ ...editForm, periode_selesai: e.target.value })} required style={{ display: 'block', width: '100%' }} />
-            </label>
-            <label style={{ gridColumn: '1 / -1' }}>
-              Deskripsi
-              <textarea value={editForm.deskripsi} onChange={(e) => setEditForm({ ...editForm, deskripsi: e.target.value })} style={{ display: 'block', width: '100%' }} />
-            </label>
-          </div>
-          <div style={{ marginTop: 12 }}>
-            <button type="submit" disabled={editSaving}>{editSaving ? 'Menyimpan...' : 'Simpan'}</button>
-            <button type="button" onClick={() => setEditForm(null)} style={{ marginLeft: 8 }}>Batal</button>
-          </div>
-        </form>
+        <Card>
+          <CardHeader>
+            <CardTitle>Edit Survey</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleEditSubmit} className="flex flex-col gap-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <Label>Judul</Label>
+                  <Input value={editForm.judul} onChange={(e) => setEditForm({ ...editForm, judul: e.target.value })} required />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label>Target Kelas</Label>
+                  <Input value={editForm.target_kelas} onChange={(e) => setEditForm({ ...editForm, target_kelas: e.target.value })} />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label>Target Angkatan</Label>
+                  <Input value={editForm.target_angkatan} onChange={(e) => setEditForm({ ...editForm, target_angkatan: e.target.value })} />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label>Periode Mulai</Label>
+                  <Input type="datetime-local" value={editForm.periode_mulai} onChange={(e) => setEditForm({ ...editForm, periode_mulai: e.target.value })} required />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label>Periode Selesai</Label>
+                  <Input type="datetime-local" value={editForm.periode_selesai} onChange={(e) => setEditForm({ ...editForm, periode_selesai: e.target.value })} required />
+                </div>
+                <div className="col-span-2 flex flex-col gap-1.5">
+                  <Label>Deskripsi</Label>
+                  <Textarea value={editForm.deskripsi} onChange={(e) => setEditForm({ ...editForm, deskripsi: e.target.value })} />
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button type="submit" disabled={editSaving}>{editSaving ? 'Menyimpan...' : 'Simpan'}</Button>
+                <Button type="button" variant="outline" onClick={() => setEditForm(null)}>Batal</Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       )}
 
-      <h2>Pertanyaan</h2>
-      {isDraft && (
-        <button onClick={openAddQuestion} style={{ marginBottom: 12 }}>+ Tambah Pertanyaan</button>
-      )}
-      {!isDraft && <p style={{ color: '#777' }}>Pertanyaan hanya bisa diubah saat survey berstatus draft.</p>}
+      <div>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-lg font-semibold">Pertanyaan</h2>
+          {isDraft && <Button size="sm" onClick={openAddQuestion}>+ Tambah Pertanyaan</Button>}
+        </div>
+        {!isDraft && (
+          <p className="mb-3 text-sm text-muted-foreground">Pertanyaan hanya bisa diubah saat survey berstatus draft.</p>
+        )}
 
-      {questionFormOpen && (
-        <form onSubmit={handleQuestionSubmit} style={{ border: '1px solid #ddd', padding: 12, marginBottom: 16 }}>
-          <h3 style={{ marginTop: 0 }}>{editingQuestionId ? 'Edit Pertanyaan' : 'Tambah Pertanyaan'}</h3>
-          <label>
-            Teks Pertanyaan
-            <input value={questionForm.teks_pertanyaan} onChange={(e) => setQuestionForm({ ...questionForm, teks_pertanyaan: e.target.value })} required style={{ display: 'block', width: '100%' }} />
-          </label>
-          <label style={{ display: 'block', marginTop: 8 }}>
-            Tipe Jawaban
-            <select value={questionForm.tipe_jawaban} onChange={(e) => setQuestionForm({ ...questionForm, tipe_jawaban: e.target.value })} style={{ display: 'block', width: '100%' }}>
-              {QUESTION_TYPES.map((t) => (
-                <option key={t} value={t}>{t}</option>
+        {questionFormOpen && (
+          <Card className="mb-4">
+            <CardHeader>
+              <CardTitle>{editingQuestionId ? 'Edit Pertanyaan' : 'Tambah Pertanyaan'}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleQuestionSubmit} className="flex flex-col gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <Label>Teks Pertanyaan</Label>
+                  <Input
+                    value={questionForm.teks_pertanyaan}
+                    onChange={(e) => setQuestionForm({ ...questionForm, teks_pertanyaan: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label>Tipe Jawaban</Label>
+                  <Select value={questionForm.tipe_jawaban} onValueChange={(v) => setQuestionForm({ ...questionForm, tipe_jawaban: v })}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {QUESTION_TYPES.map((t) => (
+                        <SelectItem key={t} value={t}>{t}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {questionForm.tipe_jawaban === 'pilihan_ganda' && (
+                  <div className="flex flex-col gap-1.5">
+                    <Label>Opsi (pisahkan dengan koma)</Label>
+                    <Input
+                      value={questionForm.opsi}
+                      onChange={(e) => setQuestionForm({ ...questionForm, opsi: e.target.value })}
+                      placeholder="Ya, Tidak"
+                    />
+                  </div>
+                )}
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="wajib"
+                    checked={questionForm.wajib}
+                    onCheckedChange={(checked) => setQuestionForm({ ...questionForm, wajib: checked })}
+                  />
+                  <Label htmlFor="wajib" className="font-normal">Wajib dijawab</Label>
+                </div>
+                {questionError && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{questionError}</AlertDescription>
+                  </Alert>
+                )}
+                <div className="flex gap-2">
+                  <Button type="submit" disabled={questionSaving}>{questionSaving ? 'Menyimpan...' : 'Simpan'}</Button>
+                  <Button type="button" variant="outline" onClick={() => setQuestionFormOpen(false)}>Batal</Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        )}
+
+        <Card>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-10">#</TableHead>
+                <TableHead>Pertanyaan</TableHead>
+                <TableHead>Tipe</TableHead>
+                <TableHead>Opsi</TableHead>
+                <TableHead>Wajib</TableHead>
+                {isDraft && <TableHead className="text-right">Aksi</TableHead>}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {questions.map((q) => (
+                <TableRow key={q.id}>
+                  <TableCell>{q.urutan}</TableCell>
+                  <TableCell className="font-medium">{q.teks_pertanyaan}</TableCell>
+                  <TableCell>{q.tipe_jawaban}</TableCell>
+                  <TableCell>{Array.isArray(q.opsi) ? q.opsi.join(', ') : '-'}</TableCell>
+                  <TableCell>{q.wajib ? 'Ya' : 'Tidak'}</TableCell>
+                  {isDraft && (
+                    <TableCell className="text-right">
+                      <Button variant="ghost" size="sm" onClick={() => openEditQuestion(q)}>Edit</Button>
+                      <Button variant="ghost" size="sm" className="text-destructive" onClick={() => handleDeleteQuestion(q)}>Hapus</Button>
+                    </TableCell>
+                  )}
+                </TableRow>
               ))}
-            </select>
-          </label>
-          {questionForm.tipe_jawaban === 'pilihan_ganda' && (
-            <label style={{ display: 'block', marginTop: 8 }}>
-              Opsi (pisahkan dengan koma)
-              <input value={questionForm.opsi} onChange={(e) => setQuestionForm({ ...questionForm, opsi: e.target.value })} placeholder="Ya, Tidak" style={{ display: 'block', width: '100%' }} />
-            </label>
-          )}
-          <label style={{ display: 'block', marginTop: 8 }}>
-            <input type="checkbox" checked={questionForm.wajib} onChange={(e) => setQuestionForm({ ...questionForm, wajib: e.target.checked })} /> Wajib dijawab
-          </label>
-          {questionError && <p style={{ color: 'red' }}>{questionError}</p>}
-          <div style={{ marginTop: 12 }}>
-            <button type="submit" disabled={questionSaving}>{questionSaving ? 'Menyimpan...' : 'Simpan'}</button>
-            <button type="button" onClick={() => setQuestionFormOpen(false)} style={{ marginLeft: 8 }}>Batal</button>
-          </div>
-        </form>
-      )}
-
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr style={{ textAlign: 'left', borderBottom: '2px solid #333' }}>
-            <th>#</th>
-            <th>Pertanyaan</th>
-            <th>Tipe</th>
-            <th>Opsi</th>
-            <th>Wajib</th>
-            {isDraft && <th>Aksi</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {questions.map((q) => (
-            <tr key={q.id} style={{ borderBottom: '1px solid #eee' }}>
-              <td>{q.urutan}</td>
-              <td>{q.teks_pertanyaan}</td>
-              <td>{q.tipe_jawaban}</td>
-              <td>{Array.isArray(q.opsi) ? q.opsi.join(', ') : '-'}</td>
-              <td>{q.wajib ? 'Ya' : 'Tidak'}</td>
-              {isDraft && (
-                <td>
-                  <button onClick={() => openEditQuestion(q)}>Edit</button>
-                  <button onClick={() => handleDeleteQuestion(q)} style={{ marginLeft: 6 }}>Hapus</button>
-                </td>
+              {questions.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={isDraft ? 6 : 5} className="text-center text-muted-foreground">
+                    Belum ada pertanyaan.
+                  </TableCell>
+                </TableRow>
               )}
-            </tr>
-          ))}
-          {questions.length === 0 && (
-            <tr>
-              <td colSpan={isDraft ? 6 : 5}>Belum ada pertanyaan.</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            </TableBody>
+          </Table>
+        </Card>
+      </div>
     </div>
   );
 }
