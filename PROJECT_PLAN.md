@@ -32,10 +32,10 @@ Dokumen ini merangkum tahapan project dari inisiasi sampai project berjalan di p
 - [x] Integrasi ke API backend → seluruh halaman (Admin/Siswa/Guru) terhubung ke API asli, tidak ada mock data
 
 ## Fase 4 — Containerization
-- [ ] Dockerfile untuk API
-- [ ] Dockerfile untuk Web (build + serve, misal via nginx)
-- [ ] `docker-compose.yml` untuk local dev (web + api + db)
-- [ ] `.env.example` untuk konfigurasi (DB credentials, JWT secret, dll — tidak commit secret asli)
+- [x] Dockerfile untuk API → `api/Dockerfile` (node:22-alpine), `entrypoint.sh` menjalankan migrate+seed sebelum start
+- [x] Dockerfile untuk Web (build + serve, misal via nginx) → `web/Dockerfile` multi-stage (Vite build → nginx), `web/nginx.conf` reverse proxy `/api` ke service `api`
+- [x] `docker-compose.yml` untuk local dev (web + api + db) → 4 service (`db`, `adminer`, `api`, `web`), terverifikasi jalan end-to-end di browser
+- [x] `.env.example` untuk konfigurasi (DB credentials, JWT secret, dll — tidak commit secret asli) → root `.env.example` untuk docker-compose
 
 ## Fase 5 — CI (Continuous Integration)
 - [ ] GitHub Actions: workflow lint & test otomatis saat PR dibuka
@@ -67,6 +67,6 @@ Dokumen ini merangkum tahapan project dari inisiasi sampai project berjalan di p
 
 ---
 
-**Status saat ini:** Fase 0-2 selesai (Backend API dengan 70 test lulus). Fase 3 (Frontend React) selesai — Admin, Siswa, dan Guru masing-masing punya dashboard yang terhubung ke API asli, semua terverifikasi jalan di browser.
+**Status saat ini:** Fase 0-4 selesai. Seluruh stack (db, adminer, api, web) sekarang jalan via `docker-compose up`, terverifikasi end-to-end di browser (login, dashboard per role, semua lewat container).
 
-**Langkah berikutnya yang disarankan:** Fase 4 — Containerization: Dockerfile untuk API dan Web, lalu satukan di `docker-compose.yml` (saat ini baru Postgres & Adminer yang dikontainerisasi).
+**Langkah berikutnya yang disarankan:** Fase 5 — CI (Continuous Integration): setup GitHub Actions untuk lint & test otomatis saat PR, lalu build & push Docker image saat merge ke `main`.

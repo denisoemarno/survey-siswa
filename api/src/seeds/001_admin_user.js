@@ -10,12 +10,13 @@ exports.seed = async function (knex) {
   const email = process.env.ADMIN_EMAIL || 'admin@survey-siswa.test';
   const password = process.env.ADMIN_PASSWORD || 'admin12345';
 
-  await knex('users').where({ email }).del();
-
-  await knex('users').insert({
-    nama: 'Admin',
-    email,
-    password_hash: await authService.hashPassword(password),
-    role: 'admin',
-  });
+  await knex('users')
+    .insert({
+      nama: 'Admin',
+      email,
+      password_hash: await authService.hashPassword(password),
+      role: 'admin',
+    })
+    .onConflict('email')
+    .merge(['password_hash']);
 };

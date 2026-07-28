@@ -1,24 +1,18 @@
 require('dotenv').config();
 
+const base = {
+  client: 'pg',
+  connection: process.env.DATABASE_URL,
+  migrations: {
+    directory: './src/migrations',
+  },
+  seeds: {
+    directory: './src/seeds',
+  },
+};
+
 module.exports = {
-  development: {
-    client: 'pg',
-    connection: process.env.DATABASE_URL,
-    migrations: {
-      directory: './src/migrations',
-    },
-    seeds: {
-      directory: './src/seeds',
-    },
-  },
-  test: {
-    client: 'pg',
-    connection: process.env.DATABASE_URL,
-    migrations: {
-      directory: './src/migrations',
-    },
-    seeds: {
-      directory: './src/seeds',
-    },
-  },
+  development: base,
+  test: base,
+  production: base,
 };
