@@ -149,14 +149,16 @@ export default function SurveysPage() {
                 </div>
                 {form.tipe === 'evaluasi_guru' && (
                   <div className="flex flex-col gap-1.5">
-                    <Label>Guru</Label>
+                    <Label>Guru Pengampu</Label>
                     <Select value={form.guru_id} onValueChange={(v) => setForm({ ...form, guru_id: v })}>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="-- pilih guru --" />
                       </SelectTrigger>
                       <SelectContent>
                         {guruOptions.map((g) => (
-                          <SelectItem key={g.id} value={g.id}>{g.nama}</SelectItem>
+                          <SelectItem key={g.id} value={g.id}>
+                            {g.nama}{g.mapel_diampu ? ` (${g.mapel_diampu})` : ''}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
