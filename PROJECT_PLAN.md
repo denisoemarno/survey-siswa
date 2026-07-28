@@ -20,8 +20,8 @@ Dokumen ini merangkum tahapan project dari inisiasi sampai project berjalan di p
 - [x] CRUD User (Admin only) → `GET/POST /api/users`, `GET/PUT/DELETE /api/users/:id`, `POST /api/users/import` (CSV), 26 test lulus
 - [x] CRUD Survey & Question (Admin only) → survey lifecycle draft→published→closed, publish butuh ≥1 pertanyaan, update/delete hanya saat draft, 45 test lulus
 - [x] Endpoint submit Response/Answer (Siswa) → `GET/POST /api/surveys/:id/responses(/me)`, validasi target kelas/angkatan, periode aktif, wajib per pertanyaan, 56 test lulus
-- [ ] Endpoint laporan/agregasi hasil (Admin & Guru, dengan aturan anonimitas)
-- [ ] Unit test untuk service/business logic penting
+- [x] Endpoint laporan/agregasi hasil (Admin & Guru, dengan aturan anonimitas) → `GET /api/surveys/:id/report`, distribusi per tipe pertanyaan, gate anonimitas guru (<5 responden), 63 test lulus
+- [x] Unit test untuk service/business logic penting → tercakup organik di 63 test sepanjang Fase 2 (auth, users, surveys/questions, responses, reports)
 
 ## Fase 3 — Development Frontend (Web)
 - [ ] Setup project React (routing, state management, auth guard per role)
@@ -67,6 +67,6 @@ Dokumen ini merangkum tahapan project dari inisiasi sampai project berjalan di p
 
 ---
 
-**Status saat ini:** Fase 0 selesai. Fase 1 sebagian selesai — skema database & API contract sudah didesain, wireframe halaman belum.
+**Status saat ini:** Fase 0 selesai. Fase 1 sebagian selesai (wireframe halaman belum, dilewati). Fase 2 (Backend API) selesai — auth, CRUD User, CRUD Survey & Question, submit Response/Answer, dan laporan/agregasi semuanya jalan dengan 63 test lulus.
 
-**Langkah berikutnya yang disarankan:** wireframe halaman utama (opsional, bisa dilewati jika langsung mulai coding), lalu lanjut ke Fase 2 (setup project Express, koneksi PostgreSQL, dan implementasi auth).
+**Langkah berikutnya yang disarankan:** Fase 3 — Development Frontend (React), mulai dari setup project dan halaman login.

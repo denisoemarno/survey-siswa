@@ -4,9 +4,9 @@ const { authenticate, authorize } = require('../middlewares/auth');
 
 const router = Router();
 
-router.use(authenticate, authorize('siswa'));
+router.use(authenticate);
 
-router.get('/:surveyId/responses/me', responseController.status);
-router.post('/:surveyId/responses', responseController.submit);
+router.get('/:surveyId/responses/me', authorize('siswa'), responseController.status);
+router.post('/:surveyId/responses', authorize('siswa'), responseController.submit);
 
 module.exports = router;

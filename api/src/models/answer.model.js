@@ -11,4 +11,11 @@ function listByResponse(responseId) {
   return db(TABLE).where({ response_id: responseId });
 }
 
-module.exports = { bulkCreate, listByResponse };
+function listBySurvey(surveyId) {
+  return db(TABLE)
+    .join('questions', 'questions.id', 'answers.question_id')
+    .where('questions.survey_id', surveyId)
+    .select('answers.*');
+}
+
+module.exports = { bulkCreate, listByResponse, listBySurvey };

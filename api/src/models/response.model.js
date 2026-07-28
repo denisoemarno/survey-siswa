@@ -13,4 +13,12 @@ function create(trx, { survey_id, siswa_id }) {
     .then((rows) => rows[0]);
 }
 
-module.exports = { findBySurveyAndSiswa, create };
+function countBySurvey(surveyId) {
+  return db(TABLE)
+    .where({ survey_id: surveyId })
+    .count('id as count')
+    .first()
+    .then((row) => Number(row.count));
+}
+
+module.exports = { findBySurveyAndSiswa, create, countBySurvey };

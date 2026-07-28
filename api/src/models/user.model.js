@@ -57,4 +57,16 @@ function remove(id) {
   return db(TABLE).where({ id }).del();
 }
 
-module.exports = { sanitize, findByEmail, findById, list, create, update, remove };
+function countByTarget({ kelas, angkatan } = {}) {
+  return db(TABLE)
+    .where('role', 'siswa')
+    .modify((qb) => {
+      if (kelas) qb.where('kelas', kelas);
+      if (angkatan) qb.where('angkatan', angkatan);
+    })
+    .count('id as count')
+    .first()
+    .then((row) => Number(row.count));
+}
+
+module.exports = { sanitize, findByEmail, findById, list, create, update, remove, countByTarget };

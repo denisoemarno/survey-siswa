@@ -5,6 +5,7 @@ const userRoutes = require('./user.routes');
 const surveyRoutes = require('./survey.routes');
 const questionRoutes = require('./question.routes');
 const responseRoutes = require('./response.routes');
+const reportRoutes = require('./report.routes');
 
 const router = Router();
 
@@ -12,6 +13,7 @@ router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
 router.use('/surveys', surveyRoutes);
 router.use('/surveys', responseRoutes);
+router.use('/surveys', reportRoutes);
 router.use('/questions', questionRoutes);
 
 router.get('/health', async (req, res, next) => {
