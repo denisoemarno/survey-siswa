@@ -10,7 +10,9 @@ import SurveyReportPage from './pages/admin/SurveyReportPage';
 import SiswaLayout from './pages/siswa/SiswaLayout';
 import SurveyListPage from './pages/siswa/SurveyListPage';
 import SurveyFillPage from './pages/siswa/SurveyFillPage';
-import GuruDashboard from './pages/GuruDashboard';
+import GuruLayout from './pages/guru/GuruLayout';
+import EvaluationsListPage from './pages/guru/EvaluationsListPage';
+import EvaluationReportPage from './pages/guru/EvaluationReportPage';
 
 function HomeRedirect() {
   const { user, loading } = useAuth();
@@ -43,7 +45,10 @@ function AppRoutes() {
       </Route>
 
       <Route element={<ProtectedRoute roles={['guru']} />}>
-        <Route path="/guru" element={<GuruDashboard />} />
+        <Route path="/guru" element={<GuruLayout />}>
+          <Route index element={<EvaluationsListPage />} />
+          <Route path="evaluations/:id" element={<EvaluationReportPage />} />
+        </Route>
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

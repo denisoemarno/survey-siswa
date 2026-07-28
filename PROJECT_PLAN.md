@@ -28,8 +28,8 @@ Dokumen ini merangkum tahapan project dari inisiasi sampai project berjalan di p
 - [x] Halaman login → terhubung ke `POST /api/auth/login`, redirect ke dashboard sesuai role, terverifikasi jalan di browser
 - [x] Dashboard Admin: kelola user, kelola survey, lihat laporan → `/admin/users` (CRUD+import CSV), `/admin/surveys` + `/admin/surveys/:id` (CRUD survey & question, publish/close), `/admin/surveys/:id/report` (laporan), terverifikasi jalan di browser
 - [x] Halaman isi survey untuk Siswa → `/siswa` (daftar survey dengan status terisi/belum) + `/siswa/surveys/:id` (form isi per tipe jawaban), terverifikasi jalan di browser
-- [ ] Dashboard hasil evaluasi untuk Guru
-- [ ] Integrasi ke API backend
+- [x] Dashboard hasil evaluasi untuk Guru → `/guru` (daftar evaluasi miliknya) + `/guru/evaluations/:id` (laporan, gate anonimitas jika <5 responden), terverifikasi jalan di browser
+- [x] Integrasi ke API backend → seluruh halaman (Admin/Siswa/Guru) terhubung ke API asli, tidak ada mock data
 
 ## Fase 4 — Containerization
 - [ ] Dockerfile untuk API
@@ -67,6 +67,6 @@ Dokumen ini merangkum tahapan project dari inisiasi sampai project berjalan di p
 
 ---
 
-**Status saat ini:** Fase 0 selesai. Fase 1 sebagian selesai (wireframe halaman belum, dilewati). Fase 2 (Backend API) selesai — auth, CRUD User, CRUD Survey & Question, submit Response/Answer, dan laporan/agregasi semuanya jalan dengan 63 test lulus.
+**Status saat ini:** Fase 0-2 selesai (Backend API dengan 70 test lulus). Fase 3 (Frontend React) selesai — Admin, Siswa, dan Guru masing-masing punya dashboard yang terhubung ke API asli, semua terverifikasi jalan di browser.
 
-**Langkah berikutnya yang disarankan:** Fase 3 — Development Frontend (React), mulai dari setup project dan halaman login.
+**Langkah berikutnya yang disarankan:** Fase 4 — Containerization: Dockerfile untuk API dan Web, lalu satukan di `docker-compose.yml` (saat ini baru Postgres & Adminer yang dikontainerisasi).

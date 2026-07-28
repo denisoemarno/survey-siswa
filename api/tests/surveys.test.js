@@ -352,6 +352,52 @@ describe('Siswa-scoped survey visibility', () => {
   });
 });
 
+describe('Guru-scoped survey list', () => {
+  const ADMIN3_EMAIL = 'test-surveys-guru-list-admin@survey-siswa.test';
+  const GURU_OWNER_EMAIL = 'test-surveys-guru-list-owner@survey-siswa.test';
+  const GURU_OTHER_EMAIL = 'test-surveys-guru-list-other@survey-siswa.test';
+
+  let ownerToken;
+  let otherToken;
+  const surveyIdsToClean = [];
+  let ownedSurveyId;
+
+  beforeAll(async () => {
+    const admin = await makeUser(ADMIN3_EMAIL, 'admin');
+    const owner = await makeUser(GURU_OWNER_EMAIL, 'guru');
+    const other = await makeUser(GURU_OTHER_EMAIL, 'guru');
+    const adminToken = authService.generateToken(admin);
+    ownerToken = authService.generateToken(owner);
+    otherToken = authService.generateToken(other);
+
+    const res = await request(app)
+      .post('/api/surveys')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ judul: 'Evaluasi Guru Owner (list test)', tipe: 'evaluasi_guru', guru_id: owner.id, ...periode() });
+    ownedSurveyId = res.body.survey.id;
+    surveyIdsToClean.push(ownedSurveyId);
+  });
+
+  afterAll(async () => {
+    for (const id of surveyIdsToClean) {
+      await db('surveys').where({ id }).del();
+    }
+    await db('users').whereIn('email', [ADMIN3_EMAIL, GURU_OWNER_EMAIL, GURU_OTHER_EMAIL]).del();
+  });
+
+  it('returns only the evaluasi_guru surveys owned by the requesting guru', async () => {
+    const res = await request(app).get('/api/surveys').set('Authorization', `Bearer ${ownerToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body.surveys.map((s) => s.id)).toContain(ownedSurveyId);
+  });
+
+  it('excludes surveys owned by a different guru', async () => {
+    const res = await request(app).get('/api/surveys').set('Authorization', `Bearer ${otherToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body.surveys.map((s) => s.id)).not.toContain(ownedSurveyId);
+  });
+});
+
 afterAll(async () => {
   await db.destroy();
 });

@@ -7,7 +7,7 @@ const router = Router();
 
 router.use(authenticate);
 
-router.get('/', authorize('admin', 'siswa'), surveyController.list);
+router.get('/', authorize('admin', 'siswa', 'guru'), surveyController.list);
 router.post('/', authorize('admin'), surveyController.create);
 router.get('/:id', authorize('admin', 'siswa'), surveyController.getById);
 router.put('/:id', authorize('admin'), surveyController.update);

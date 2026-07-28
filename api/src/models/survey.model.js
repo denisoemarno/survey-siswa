@@ -2,11 +2,12 @@ const db = require('../config/db');
 
 const TABLE = 'surveys';
 
-function list({ tipe, status } = {}) {
+function list({ tipe, status, guru_id } = {}) {
   return db(TABLE)
     .modify((qb) => {
       if (tipe) qb.where('tipe', tipe);
       if (status) qb.where('status', status);
+      if (guru_id) qb.where('guru_id', guru_id);
     })
     .orderBy('created_at', 'desc');
 }

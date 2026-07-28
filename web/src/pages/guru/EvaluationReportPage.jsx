@@ -4,7 +4,7 @@ import { getReport } from '../../api/reports';
 import { errorMessage } from '../../api/errors';
 import ReportView from '../../components/ReportView';
 
-export default function SurveyReportPage() {
+export default function EvaluationReportPage() {
   const { id } = useParams();
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -24,7 +24,7 @@ export default function SurveyReportPage() {
 
   return (
     <div>
-      <p><Link to={`/admin/surveys/${id}`}>&larr; Kembali ke survey</Link></p>
+      <p><Link to="/guru">&larr; Kembali ke daftar evaluasi</Link></p>
       <ReportView report={report} />
     </div>
   );

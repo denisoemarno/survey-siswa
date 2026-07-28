@@ -28,6 +28,11 @@ async function list(req, res, next) {
       return res.json({ surveys });
     }
 
+    if (req.user.role === 'guru') {
+      const surveys = await surveyModel.list({ tipe: 'evaluasi_guru', guru_id: req.user.sub });
+      return res.json({ surveys });
+    }
+
     const { tipe, status } = req.query;
     const surveys = await surveyModel.list({ tipe, status });
     res.json({ surveys });
