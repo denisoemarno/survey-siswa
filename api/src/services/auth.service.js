@@ -36,7 +36,7 @@ async function login(email, password) {
   }
 
   const token = generateToken(user);
-  const { password_hash, ...safeUser } = user;
+  const { password_hash: _password_hash, ...safeUser } = user;
   return { token, user: safeUser };
 }
 

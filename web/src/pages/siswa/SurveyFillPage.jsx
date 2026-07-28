@@ -119,7 +119,7 @@ export default function SurveyFillPage() {
     return (
       <div>
         <h1>Terima kasih!</h1>
-        <p>Jawaban anda untuk survey "{survey.judul}" berhasil dikirim.</p>
+        <p>Jawaban anda untuk survey &quot;{survey.judul}&quot; berhasil dikirim.</p>
         <Link to="/siswa">&larr; Kembali ke daftar survey</Link>
       </div>
     );

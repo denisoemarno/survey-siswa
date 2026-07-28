@@ -38,9 +38,11 @@ Dokumen ini merangkum tahapan project dari inisiasi sampai project berjalan di p
 - [x] `.env.example` untuk konfigurasi (DB credentials, JWT secret, dll — tidak commit secret asli) → root `.env.example` untuk docker-compose
 
 ## Fase 5 — CI (Continuous Integration)
-- [ ] GitHub Actions: workflow lint & test otomatis saat PR dibuka
-- [ ] GitHub Actions: build Docker image saat merge ke `main`
-- [ ] Push image ke container registry (GHCR/Docker Hub)
+- [x] GitHub Actions: workflow lint & test otomatis saat PR dibuka → `.github/workflows/ci.yml` (job `api` dengan service Postgres + migrate + jest, job `web` dengan eslint + vite build); ESLint dasar ditambahkan ke kedua project, semua bersih
+- [x] GitHub Actions: build Docker image saat merge ke `main` → `.github/workflows/docker-publish.yml`
+- [x] Push image ke container registry (GHCR/Docker Hub) → push ke GHCR (`ghcr.io/<repo>/api`, `ghcr.io/<repo>/web`), tag `latest` + sha
+
+**Catatan:** belum bisa diverifikasi jalan sungguhan karena repo ini belum punya remote GitHub — akan tervalidasi begitu di-push pertama kali.
 
 ## Fase 6 — CD (Continuous Deployment)
 - [ ] Pilih target deployment (VPS sederhana / cloud provider — didiskusikan saat tiba di fase ini)
@@ -69,4 +71,4 @@ Dokumen ini merangkum tahapan project dari inisiasi sampai project berjalan di p
 
 **Status saat ini:** Fase 0-4 selesai. Seluruh stack (db, adminer, api, web) sekarang jalan via `docker-compose up`, terverifikasi end-to-end di browser (login, dashboard per role, semua lewat container).
 
-**Langkah berikutnya yang disarankan:** Fase 5 — CI (Continuous Integration): setup GitHub Actions untuk lint & test otomatis saat PR, lalu build & push Docker image saat merge ke `main`.
+**Langkah berikutnya yang disarankan:** push repo ke GitHub (belum ada remote) supaya workflow CI bisa benar-benar tervalidasi, lalu lanjut Fase 6 — CD (pilih target deployment).

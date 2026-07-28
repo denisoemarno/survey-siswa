@@ -15,7 +15,7 @@ const SAFE_COLUMNS = [
 
 function sanitize(user) {
   if (!user) return user;
-  const { password_hash, ...rest } = user;
+  const { password_hash: _password_hash, ...rest } = user;
   return rest;
 }
 

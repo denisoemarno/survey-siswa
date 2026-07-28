@@ -21,7 +21,7 @@ async function me(req, res, next) {
     if (!user) {
       return res.status(404).json({ error: { message: 'User tidak ditemukan' } });
     }
-    const { password_hash, ...safeUser } = user;
+    const { password_hash: _password_hash, ...safeUser } = user;
     res.json({ user: safeUser });
   } catch (err) {
     next(err);
