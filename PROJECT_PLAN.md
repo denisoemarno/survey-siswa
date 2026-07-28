@@ -18,7 +18,7 @@ Dokumen ini merangkum tahapan project dari inisiasi sampai project berjalan di p
 - [x] Koneksi PostgreSQL (migration tool: Knex/Prisma) → PostgreSQL via `docker-compose.yml`, Knex migration `api/src/migrations`, `GET /api/health` cek koneksi DB
 - [x] Auth (register/login, JWT, middleware role-based access) → `POST /api/auth/login`, `GET /api/auth/me`, middleware `authenticate`/`authorize`, seed admin awal, 10 test lulus
 - [x] CRUD User (Admin only) → `GET/POST /api/users`, `GET/PUT/DELETE /api/users/:id`, `POST /api/users/import` (CSV), 26 test lulus
-- [ ] CRUD Survey & Question (Admin only)
+- [x] CRUD Survey & Question (Admin only) → survey lifecycle draft→published→closed, publish butuh ≥1 pertanyaan, update/delete hanya saat draft, 45 test lulus
 - [ ] Endpoint submit Response/Answer (Siswa)
 - [ ] Endpoint laporan/agregasi hasil (Admin & Guru, dengan aturan anonimitas)
 - [ ] Unit test untuk service/business logic penting
