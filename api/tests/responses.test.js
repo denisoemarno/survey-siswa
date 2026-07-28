@@ -75,7 +75,9 @@ describe('Response & Answer submission (Siswa)', () => {
     for (const id of surveyIdsToClean) {
       await db('surveys').where({ id }).del();
     }
-    await db('users').whereIn('email', [ADMIN_EMAIL, SISWA_EMAIL, SISWA_OTHER_KELAS_EMAIL]).del();
+    await db('users')
+      .whereIn('email', [ADMIN_EMAIL, SISWA_EMAIL, SISWA_OTHER_KELAS_EMAIL, 'test-responses-racer@survey-siswa.test'])
+      .del();
     await db.destroy();
   });
 
@@ -243,5 +245,35 @@ describe('Response & Answer submission (Siswa)', () => {
         ],
       });
     expect(resubmitRes.status).toBe(409);
+  });
+
+  it('lets exactly one of several concurrent first-time submissions succeed', async () => {
+    const { surveyId, pilihanGandaId, skalaId } = await createPublishedSurvey(adminToken);
+    surveyIdsToClean.push(surveyId);
+
+    const racer = await makeUser('test-responses-racer@survey-siswa.test', 'siswa', {
+      kelas: '10 IPA 1',
+      angkatan: 2026,
+    });
+    const racerToken = authService.generateToken(racer);
+
+    const results = await Promise.all(
+      Array.from({ length: 5 }, () =>
+        request(app)
+          .post(`/api/surveys/${surveyId}/responses`)
+          .set('Authorization', `Bearer ${racerToken}`)
+          .send({
+            answers: [
+              { question_id: pilihanGandaId, jawaban: 'Ya' },
+              { question_id: skalaId, jawaban: 5 },
+            ],
+          })
+      )
+    );
+
+    const statuses = results.map((r) => r.status);
+    expect(statuses.filter((s) => s === 201)).toHaveLength(1);
+    expect(statuses.filter((s) => s === 409)).toHaveLength(4);
+    expect(statuses.every((s) => s === 201 || s === 409)).toBe(true);
   });
 });

@@ -51,9 +51,9 @@ Dokumen ini merangkum tahapan project dari inisiasi sampai project berjalan di p
 - [x] Health check & rollback strategy sederhana → `GET /api/health` dicek workflow setelah deploy; rollback via redeploy tag commit sha sebelumnya
 
 ## Fase 7 — Testing & QA
-- [ ] Testing manual end-to-end tiap role (Siswa, Guru, Admin)
-- [ ] Uji beban ringan (simulasi banyak submission bersamaan)
-- [ ] Uji keamanan dasar (input validation, akses tanpa auth, dsb)
+- [x] Testing manual end-to-end tiap role (Siswa, Guru, Admin) → lihat `docs/QA_TESTING.md` §1
+- [x] Uji beban ringan (simulasi banyak submission bersamaan) → 50 submission konkuren sukses, race condition test menemukan & memicu perbaikan bug 500→409; lihat `docs/QA_TESTING.md` §2
+- [x] Uji keamanan dasar (input validation, akses tanpa auth, dsb) → SQLi, XSS, auth boundary, malformed input dicek; ditemukan & diperbaiki kebocoran detail error internal; lihat `docs/QA_TESTING.md` §3
 
 ## Fase 8 — Monitoring & Maintenance
 - [ ] Setup logging aplikasi (misal Winston/Pino di backend)
@@ -71,4 +71,4 @@ Dokumen ini merangkum tahapan project dari inisiasi sampai project berjalan di p
 
 **Status saat ini:** Fase 0-6 selesai. Repo sudah di GitHub (`denisoemarno/survey-siswa`) dengan CI dan build+push image (multi-platform amd64/arm64) ke GHCR tervalidasi sukses jalan otomatis. Pipeline build→push→deploy terbukti bekerja lewat simulasi lokal (`docker-compose.prod.yml` menarik image asli dari GHCR dan jalan berdampingan dengan dev stack). Belum ada VPS/cloud sungguhan — `deploy.yml` sudah siap sebagai template manual (`workflow_dispatch`) begitu ada target nyata.
 
-**Langkah berikutnya yang disarankan:** Fase 7 — Testing & QA: testing manual end-to-end tiap role, uji beban ringan, dan uji keamanan dasar.
+**Langkah berikutnya yang disarankan:** Fase 8 — Monitoring & Maintenance: setup logging aplikasi, monitoring dasar, dan dokumentasi runbook.

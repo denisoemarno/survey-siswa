@@ -5,6 +5,8 @@ const responseModel = require('../models/response.model');
 const answerModel = require('../models/answer.model');
 const userModel = require('../models/user.model');
 
+const PG_UNIQUE_VIOLATION = '23505';
+
 function validateAnswerForQuestion(question, rawAnswer) {
   const hasAnswer = rawAnswer !== undefined && rawAnswer !== null && rawAnswer !== '';
 
@@ -111,6 +113,13 @@ async function submit(req, res, next) {
 
     res.status(201).json({ response, answers_count: answerRows.length });
   } catch (err) {
+    // Two concurrent first-time submissions from the same siswa can both pass the
+    // pre-check above before either commits; the unique constraint on
+    // (survey_id, siswa_id) is what actually prevents the duplicate, so the loser
+    // must be mapped to the same 409 rather than falling through as a 500.
+    if (err.code === PG_UNIQUE_VIOLATION) {
+      return res.status(409).json({ error: { message: 'Anda sudah pernah mengisi survey ini' } });
+    }
     next(err);
   }
 }
