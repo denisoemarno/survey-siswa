@@ -2,7 +2,11 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './routes/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
-import AdminDashboard from './pages/AdminDashboard';
+import AdminLayout from './pages/admin/AdminLayout';
+import UsersPage from './pages/admin/UsersPage';
+import SurveysPage from './pages/admin/SurveysPage';
+import SurveyDetailPage from './pages/admin/SurveyDetailPage';
+import SurveyReportPage from './pages/admin/SurveyReportPage';
 import SiswaDashboard from './pages/SiswaDashboard';
 import GuruDashboard from './pages/GuruDashboard';
 
@@ -20,7 +24,13 @@ function AppRoutes() {
       <Route path="/" element={<HomeRedirect />} />
 
       <Route element={<ProtectedRoute roles={['admin']} />}>
-        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Navigate to="users" replace />} />
+          <Route path="users" element={<UsersPage />} />
+          <Route path="surveys" element={<SurveysPage />} />
+          <Route path="surveys/:id" element={<SurveyDetailPage />} />
+          <Route path="surveys/:id/report" element={<SurveyReportPage />} />
+        </Route>
       </Route>
 
       <Route element={<ProtectedRoute roles={['siswa']} />}>

@@ -26,7 +26,7 @@ Dokumen ini merangkum tahapan project dari inisiasi sampai project berjalan di p
 ## Fase 3 — Development Frontend (Web)
 - [x] Setup project React (routing, state management, auth guard per role) → Vite + React Router, `AuthContext`, `ProtectedRoute` per role
 - [x] Halaman login → terhubung ke `POST /api/auth/login`, redirect ke dashboard sesuai role, terverifikasi jalan di browser
-- [ ] Dashboard Admin: kelola user, kelola survey, lihat laporan
+- [x] Dashboard Admin: kelola user, kelola survey, lihat laporan → `/admin/users` (CRUD+import CSV), `/admin/surveys` + `/admin/surveys/:id` (CRUD survey & question, publish/close), `/admin/surveys/:id/report` (laporan), terverifikasi jalan di browser
 - [ ] Halaman isi survey untuk Siswa
 - [ ] Dashboard hasil evaluasi untuk Guru
 - [ ] Integrasi ke API backend
