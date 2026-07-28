@@ -1,7 +1,10 @@
 const { Router } = require('express');
 const db = require('../config/db');
+const authRoutes = require('./auth.routes');
 
 const router = Router();
+
+router.use('/auth', authRoutes);
 
 router.get('/health', async (req, res, next) => {
   try {

@@ -16,7 +16,7 @@ Dokumen ini merangkum tahapan project dari inisiasi sampai project berjalan di p
 ## Fase 2 — Development Backend (API)
 - [x] Setup project Express + struktur folder (routes/controllers/services/models) → `api/src`, health-check `GET /api/health` + test
 - [x] Koneksi PostgreSQL (migration tool: Knex/Prisma) → PostgreSQL via `docker-compose.yml`, Knex migration `api/src/migrations`, `GET /api/health` cek koneksi DB
-- [ ] Auth (register/login, JWT, middleware role-based access)
+- [x] Auth (register/login, JWT, middleware role-based access) → `POST /api/auth/login`, `GET /api/auth/me`, middleware `authenticate`/`authorize`, seed admin awal, 10 test lulus
 - [ ] CRUD User (Admin only)
 - [ ] CRUD Survey & Question (Admin only)
 - [ ] Endpoint submit Response/Answer (Siswa)
