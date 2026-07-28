@@ -69,6 +69,6 @@ Dokumen ini merangkum tahapan project dari inisiasi sampai project berjalan di p
 
 ---
 
-**Status saat ini:** Fase 0-5 selesai. Repo sudah di GitHub (`denisoemarno/survey-siswa`), CI (lint+test) dan build+push image ke GHCR terverifikasi sukses jalan otomatis.
+**Status saat ini:** Fase 0-6 selesai. Repo sudah di GitHub (`denisoemarno/survey-siswa`) dengan CI dan build+push image (multi-platform amd64/arm64) ke GHCR tervalidasi sukses jalan otomatis. Pipeline build→push→deploy terbukti bekerja lewat simulasi lokal (`docker-compose.prod.yml` menarik image asli dari GHCR dan jalan berdampingan dengan dev stack). Belum ada VPS/cloud sungguhan — `deploy.yml` sudah siap sebagai template manual (`workflow_dispatch`) begitu ada target nyata.
 
-**Langkah berikutnya yang disarankan:** Fase 6 — CD (Continuous Deployment): pilih target deployment (VPS sederhana atau cloud provider), lalu buat workflow deploy otomatis dari GitHub Actions.
+**Langkah berikutnya yang disarankan:** Fase 7 — Testing & QA: testing manual end-to-end tiap role, uji beban ringan, dan uji keamanan dasar.
