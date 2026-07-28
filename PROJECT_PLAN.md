@@ -24,8 +24,8 @@ Dokumen ini merangkum tahapan project dari inisiasi sampai project berjalan di p
 - [x] Unit test untuk service/business logic penting → tercakup organik di 63 test sepanjang Fase 2 (auth, users, surveys/questions, responses, reports)
 
 ## Fase 3 — Development Frontend (Web)
-- [ ] Setup project React (routing, state management, auth guard per role)
-- [ ] Halaman login
+- [x] Setup project React (routing, state management, auth guard per role) → Vite + React Router, `AuthContext`, `ProtectedRoute` per role
+- [x] Halaman login → terhubung ke `POST /api/auth/login`, redirect ke dashboard sesuai role, terverifikasi jalan di browser
 - [ ] Dashboard Admin: kelola user, kelola survey, lihat laporan
 - [ ] Halaman isi survey untuk Siswa
 - [ ] Dashboard hasil evaluasi untuk Guru
