@@ -26,7 +26,7 @@ services:
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@survey-siswa.test}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin12345}
     ports:
-      - "3000:3000"
+      - "${API_PORT:-3000}:3000"
     depends_on:
       db:
         condition: service_healthy
@@ -35,7 +35,7 @@ services:
     image: ${GHCR_NAMESPACE:-ghcr.io/denisoemarno/survey-siswa}/web:${IMAGE_TAG:-latest}
     restart: unless-stopped
     ports:
-      - "8000:80"
+      - "${WEB_PORT:-8000}:80"
     depends_on:
       - api
 

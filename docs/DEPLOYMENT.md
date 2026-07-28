@@ -21,6 +21,11 @@ curl http://localhost:3000/api/health
 
 Web bisa diakses di `http://localhost:8000` (port beda dari dev supaya bisa jalan berdampingan dengan `docker-compose.yml`).
 
+Kalau dev stack (`docker-compose.yml`) juga sedang jalan di port 3000, override port API simulasi ini supaya tidak bentrok:
+```bash
+API_PORT=3001 docker compose -p survey-siswa-prod -f docker-compose.prod.yml up -d
+```
+
 Matikan dengan:
 ```bash
 docker compose -p survey-siswa-prod -f docker-compose.prod.yml down
