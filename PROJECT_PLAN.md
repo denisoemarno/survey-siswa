@@ -56,10 +56,10 @@ Dokumen ini merangkum tahapan project dari inisiasi sampai project berjalan di p
 - [x] Uji keamanan dasar (input validation, akses tanpa auth, dsb) → SQLi, XSS, auth boundary, malformed input dicek; ditemukan & diperbaiki kebocoran detail error internal; lihat `docs/QA_TESTING.md` §3
 
 ## Fase 8 — Monitoring & Maintenance
-- [ ] Setup logging aplikasi (misal Winston/Pino di backend)
-- [ ] Setup monitoring dasar (uptime check, resource usage container)
-- [ ] Dokumentasi runbook (cara restart service, cara backup DB)
-- [ ] Backup rutin database
+- [x] Setup logging aplikasi (misal Winston/Pino di backend) → `pino` + `pino-http` (JSON terstruktur di produksi, pretty-print saat dev), menggantikan `morgan`/`console.error`
+- [x] Setup monitoring dasar (uptime check, resource usage container) → `GET /api/health` + Docker `HEALTHCHECK` di kedua Dockerfile, terlihat di `docker compose ps`; `docker stats` untuk resource
+- [x] Dokumentasi runbook (cara restart service, cara backup DB) → `docs/RUNBOOK.md`
+- [x] Backup rutin database → `scripts/backup-db.sh` + `scripts/restore-db.sh`, siap dijadwalkan via cron begitu ada server sungguhan
 
 ## Fase 9 — Go-Live & Evaluasi
 - [ ] Rilis ke pengguna nyata (siswa/guru/admin sekolah)
@@ -71,4 +71,4 @@ Dokumen ini merangkum tahapan project dari inisiasi sampai project berjalan di p
 
 **Status saat ini:** Fase 0-6 selesai. Repo sudah di GitHub (`denisoemarno/survey-siswa`) dengan CI dan build+push image (multi-platform amd64/arm64) ke GHCR tervalidasi sukses jalan otomatis. Pipeline build→push→deploy terbukti bekerja lewat simulasi lokal (`docker-compose.prod.yml` menarik image asli dari GHCR dan jalan berdampingan dengan dev stack). Belum ada VPS/cloud sungguhan — `deploy.yml` sudah siap sebagai template manual (`workflow_dispatch`) begitu ada target nyata.
 
-**Langkah berikutnya yang disarankan:** Fase 8 — Monitoring & Maintenance: setup logging aplikasi, monitoring dasar, dan dokumentasi runbook.
+**Langkah berikutnya yang disarankan:** Fase 9 — Go-Live & Evaluasi. Karena belum ada pengguna nyata (siswa/guru/admin sekolah sungguhan), fase ini menunggu keputusan kapan project mau benar-benar dipakai.
