@@ -15,6 +15,25 @@ function findById(id) {
   return db(TABLE).where({ id }).first();
 }
 
+function listForSiswa({ kelas, angkatan, siswaId }) {
+  return db(TABLE)
+    .where('status', 'published')
+    .andWhere((qb) => {
+      qb.whereNull('target_kelas').orWhere('target_kelas', kelas);
+    })
+    .andWhere((qb) => {
+      qb.whereNull('target_angkatan').orWhere('target_angkatan', angkatan);
+    })
+    .select(
+      '*',
+      db.raw(
+        'EXISTS (SELECT 1 FROM responses WHERE responses.survey_id = surveys.id AND responses.siswa_id = ?) as submitted',
+        [siswaId]
+      )
+    )
+    .orderBy('periode_mulai', 'desc');
+}
+
 function create(data) {
   return db(TABLE)
     .insert(data)
@@ -34,4 +53,4 @@ function remove(id) {
   return db(TABLE).where({ id }).del();
 }
 
-module.exports = { list, findById, create, update, remove };
+module.exports = { list, findById, listForSiswa, create, update, remove };

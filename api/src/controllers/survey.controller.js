@@ -18,12 +18,28 @@ async function validateGuru(tipe, guru_id) {
 
 async function list(req, res, next) {
   try {
+    if (req.user.role === 'siswa') {
+      const siswa = await userModel.findById(req.user.sub);
+      const surveys = await surveyModel.listForSiswa({
+        kelas: siswa.kelas,
+        angkatan: siswa.angkatan,
+        siswaId: siswa.id,
+      });
+      return res.json({ surveys });
+    }
+
     const { tipe, status } = req.query;
     const surveys = await surveyModel.list({ tipe, status });
     res.json({ surveys });
   } catch (err) {
     next(err);
   }
+}
+
+function siswaCanAccessSurvey(survey, siswa) {
+  const kelasMatch = !survey.target_kelas || survey.target_kelas === siswa.kelas;
+  const angkatanMatch = !survey.target_angkatan || survey.target_angkatan === siswa.angkatan;
+  return survey.status === 'published' && kelasMatch && angkatanMatch;
 }
 
 async function create(req, res, next) {
@@ -71,6 +87,14 @@ async function getById(req, res, next) {
     if (!survey) {
       return res.status(404).json({ error: { message: 'Survey tidak ditemukan' } });
     }
+
+    if (req.user.role === 'siswa') {
+      const siswa = await userModel.findById(req.user.sub);
+      if (!siswaCanAccessSurvey(survey, siswa)) {
+        return res.status(403).json({ error: { message: 'Tidak punya akses ke survey ini' } });
+      }
+    }
+
     const questions = await questionModel.listBySurvey(survey.id);
     res.json({ survey, questions });
   } catch (err) {

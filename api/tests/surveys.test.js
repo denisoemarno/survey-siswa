@@ -46,7 +46,6 @@ describe('Surveys & Questions CRUD (Admin only)', () => {
       await db('surveys').where({ id }).del();
     }
     await db('users').whereIn('email', [ADMIN_EMAIL, GURU_EMAIL, SISWA_EMAIL]).del();
-    await db.destroy();
   });
 
   describe('POST /api/surveys', () => {
@@ -261,4 +260,98 @@ describe('Surveys & Questions CRUD (Admin only)', () => {
       expect(res.status).toBe(204);
     });
   });
+});
+
+describe('Siswa-scoped survey visibility', () => {
+  const ADMIN2_EMAIL = 'test-surveys-scope-admin@survey-siswa.test';
+  const SISWA_MATCH_EMAIL = 'test-surveys-scope-siswa-match@survey-siswa.test';
+  const SISWA_OTHER_EMAIL = 'test-surveys-scope-siswa-other@survey-siswa.test';
+
+  let adminToken;
+  let siswaMatchToken;
+  let siswaOtherToken;
+  const surveyIdsToClean = [];
+  let targetedSurveyId;
+  let draftSurveyId;
+
+  beforeAll(async () => {
+    const admin = await makeUser(ADMIN2_EMAIL, 'admin');
+    const siswaMatch = await makeUser(SISWA_MATCH_EMAIL, 'siswa');
+    await db('users').where({ id: siswaMatch.id }).update({ kelas: '10 IPA 1', angkatan: 2026 });
+    const siswaOther = await makeUser(SISWA_OTHER_EMAIL, 'siswa');
+    await db('users').where({ id: siswaOther.id }).update({ kelas: '10 IPA 2', angkatan: 2026 });
+
+    adminToken = authService.generateToken(admin);
+    siswaMatchToken = authService.generateToken(siswaMatch);
+    siswaOtherToken = authService.generateToken(siswaOther);
+
+    const targeted = await request(app)
+      .post('/api/surveys')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ judul: 'Targeted for 10 IPA 1', tipe: 'kepuasan', target_kelas: '10 IPA 1', ...periode() });
+    targetedSurveyId = targeted.body.survey.id;
+    surveyIdsToClean.push(targetedSurveyId);
+
+    await request(app)
+      .post(`/api/surveys/${targetedSurveyId}/questions`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ teks_pertanyaan: 'Puas?', tipe_jawaban: 'essay', wajib: false });
+
+    await request(app).post(`/api/surveys/${targetedSurveyId}/publish`).set('Authorization', `Bearer ${adminToken}`);
+
+    const draft = await request(app)
+      .post('/api/surveys')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ judul: 'Still draft', tipe: 'kepuasan', target_kelas: '10 IPA 1', ...periode() });
+    draftSurveyId = draft.body.survey.id;
+    surveyIdsToClean.push(draftSurveyId);
+  });
+
+  afterAll(async () => {
+    for (const id of surveyIdsToClean) {
+      await db('surveys').where({ id }).del();
+    }
+    await db('users').whereIn('email', [ADMIN2_EMAIL, SISWA_MATCH_EMAIL, SISWA_OTHER_EMAIL]).del();
+  });
+
+  it('lists only published surveys matching the siswa target_kelas', async () => {
+    const res = await request(app).get('/api/surveys').set('Authorization', `Bearer ${siswaMatchToken}`);
+    expect(res.status).toBe(200);
+    const ids = res.body.surveys.map((s) => s.id);
+    expect(ids).toContain(targetedSurveyId);
+    expect(ids).not.toContain(draftSurveyId);
+    expect(res.body.surveys.find((s) => s.id === targetedSurveyId).submitted).toBe(false);
+  });
+
+  it('excludes surveys targeted at a different kelas', async () => {
+    const res = await request(app).get('/api/surveys').set('Authorization', `Bearer ${siswaOtherToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body.surveys.map((s) => s.id)).not.toContain(targetedSurveyId);
+  });
+
+  it('allows a matching siswa to view survey detail + questions', async () => {
+    const res = await request(app)
+      .get(`/api/surveys/${targetedSurveyId}`)
+      .set('Authorization', `Bearer ${siswaMatchToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body.questions.length).toBeGreaterThan(0);
+  });
+
+  it('rejects a non-matching siswa viewing survey detail', async () => {
+    const res = await request(app)
+      .get(`/api/surveys/${targetedSurveyId}`)
+      .set('Authorization', `Bearer ${siswaOtherToken}`);
+    expect(res.status).toBe(403);
+  });
+
+  it('rejects a siswa viewing a draft survey', async () => {
+    const res = await request(app)
+      .get(`/api/surveys/${draftSurveyId}`)
+      .set('Authorization', `Bearer ${siswaMatchToken}`);
+    expect(res.status).toBe(403);
+  });
+});
+
+afterAll(async () => {
+  await db.destroy();
 });
