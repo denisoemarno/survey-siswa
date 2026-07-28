@@ -14,7 +14,7 @@ Dokumen ini merangkum tahapan project dari inisiasi sampai project berjalan di p
 - [ ] Wireframe halaman utama: login, dashboard admin, form isi survey (siswa), dashboard hasil (guru)
 
 ## Fase 2 — Development Backend (API)
-- [ ] Setup project Express + struktur folder (routes/controllers/services/models)
+- [x] Setup project Express + struktur folder (routes/controllers/services/models) → `api/src`, health-check `GET /api/health` + test
 - [ ] Koneksi PostgreSQL (migration tool: Knex/Prisma)
 - [ ] Auth (register/login, JWT, middleware role-based access)
 - [ ] CRUD User (Admin only)
