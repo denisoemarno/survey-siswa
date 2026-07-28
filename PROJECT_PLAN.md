@@ -45,10 +45,10 @@ Dokumen ini merangkum tahapan project dari inisiasi sampai project berjalan di p
 **Terverifikasi:** repo di-push ke `github.com/denisoemarno/survey-siswa`, kedua workflow (CI dan Build and Push Docker Images) sukses jalan di commit `a9115bd`. Image tersedia di `ghcr.io/denisoemarno/survey-siswa/{api,web}`.
 
 ## Fase 6 — CD (Continuous Deployment)
-- [ ] Pilih target deployment (VPS sederhana / cloud provider — didiskusikan saat tiba di fase ini)
-- [ ] Workflow deploy otomatis dari GitHub Actions ke target
-- [ ] Setup environment variables/secrets di target deployment (GitHub Secrets)
-- [ ] Health check & rollback strategy sederhana
+- [x] Pilih target deployment → belum ada VPS/cloud nyata, disepakati untuk simulasi lokal dulu (`docker-compose.prod.yml` pull image asli dari GHCR)
+- [x] Workflow deploy otomatis dari GitHub Actions ke target → `.github/workflows/deploy.yml` (manual `workflow_dispatch`, siap pakai begitu ada VPS — tinggal isi secrets)
+- [x] Setup environment variables/secrets di target deployment (GitHub Secrets) → didokumentasikan di `docs/DEPLOYMENT.md` (`VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`)
+- [x] Health check & rollback strategy sederhana → `GET /api/health` dicek workflow setelah deploy; rollback via redeploy tag commit sha sebelumnya
 
 ## Fase 7 — Testing & QA
 - [ ] Testing manual end-to-end tiap role (Siswa, Guru, Admin)

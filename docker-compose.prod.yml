@@ -1,0 +1,43 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-survey_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-survey_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-survey_siswa}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-survey_user} -d ${POSTGRES_DB:-survey_siswa}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    image: ${GHCR_NAMESPACE:-ghcr.io/denisoemarno/survey-siswa}/api:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      NODE_ENV: production
+      DATABASE_URL: postgres://${POSTGRES_USER:-survey_user}:${POSTGRES_PASSWORD:-survey_pass}@db:5432/${POSTGRES_DB:-survey_siswa}
+      JWT_SECRET: ${JWT_SECRET:-change-me}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-8h}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@survey-siswa.test}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin12345}
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    image: ${GHCR_NAMESPACE:-ghcr.io/denisoemarno/survey-siswa}/web:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    depends_on:
+      - api
+
+volumes:
+  db_data:

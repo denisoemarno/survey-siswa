@@ -1,0 +1,46 @@
+name: Deploy
+
+# Manual trigger only — this project doesn't have a real deployment target yet.
+# Once you have a VPS, add these repo secrets and this workflow is ready to use:
+#   VPS_HOST     - server IP/hostname
+#   VPS_USER     - SSH user
+#   VPS_SSH_KEY  - private key with access to that user
+# Then either switch `on:` to include `push: branches: [main]` for auto-deploy,
+# or keep it manual and trigger from the Actions tab.
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Image tag to deploy (e.g. latest, or a commit sha)'
+        default: latest
+        required: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Copy compose file to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: docker-compose.prod.yml
+          target: ~/survey-siswa/
+
+      - name: Pull latest images and restart
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd ~/survey-siswa
+            export IMAGE_TAG=${{ github.event.inputs.image_tag }}
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml up -d
+            sleep 5
+            curl -f http://localhost:3000/api/health || (echo "Health check failed" && exit 1)
