@@ -69,7 +69,7 @@ exports.up = async function (knex) {
     CREATE TABLE answers (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       response_id UUID NOT NULL REFERENCES responses(id) ON DELETE CASCADE,
-      question_id UUID NOT NULL REFERENCES questions(id),
+      question_id UUID NOT NULL REFERENCES questions(id) ON DELETE CASCADE,
       jawaban_pilihan TEXT,
       jawaban_skala INT CHECK (jawaban_skala BETWEEN 1 AND 5),
       jawaban_teks TEXT

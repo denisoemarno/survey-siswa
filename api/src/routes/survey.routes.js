@@ -5,17 +5,17 @@ const { authenticate, authorize } = require('../middlewares/auth');
 
 const router = Router();
 
-router.use(authenticate, authorize('admin'));
+router.use(authenticate);
 
-router.get('/', surveyController.list);
-router.post('/', surveyController.create);
-router.get('/:id', surveyController.getById);
-router.put('/:id', surveyController.update);
-router.delete('/:id', surveyController.remove);
-router.post('/:id/publish', surveyController.publish);
-router.post('/:id/close', surveyController.close);
+router.get('/', authorize('admin'), surveyController.list);
+router.post('/', authorize('admin'), surveyController.create);
+router.get('/:id', authorize('admin'), surveyController.getById);
+router.put('/:id', authorize('admin'), surveyController.update);
+router.delete('/:id', authorize('admin'), surveyController.remove);
+router.post('/:id/publish', authorize('admin'), surveyController.publish);
+router.post('/:id/close', authorize('admin'), surveyController.close);
 
-router.get('/:surveyId/questions', questionController.list);
-router.post('/:surveyId/questions', questionController.create);
+router.get('/:surveyId/questions', authorize('admin'), questionController.list);
+router.post('/:surveyId/questions', authorize('admin'), questionController.create);
 
 module.exports = router;
